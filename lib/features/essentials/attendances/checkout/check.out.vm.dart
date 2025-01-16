@@ -6,6 +6,7 @@ import 'package:absensi_cifo_v2/features/essentials/attendances/checkin/check.in
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkoutlate/check.out.late.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.vm.dart';
+import 'package:basic_utils/basic_utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -83,7 +84,9 @@ class CheckOutVM extends GetxController
 
         if (identityData != null)
         {
-            usernameWrapper.value = jsonDecode(identityData)['username'];
+            String usernameWrapperData = (jsonDecode(identityData)['username']);
+
+            usernameWrapper.value = StringUtils.capitalize(usernameWrapperData);
         }
 
         if (absentData != null)

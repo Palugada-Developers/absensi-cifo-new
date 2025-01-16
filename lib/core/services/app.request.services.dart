@@ -390,7 +390,7 @@ class AppRequestServices
 
             if (idRawData != null)
             {
-                idData = jsonDecode(idRawData)['kar_id'];
+                idData = (jsonDecode(idRawData)['kar_id']).toString();
             }
 
             var requestData =
@@ -401,6 +401,8 @@ class AppRequestServices
                     'battery': batteryData,
                     'timestamp': formattedTimestamp
                 };
+
+            Logger().d(requestData);
 
             final response = await _apiServices.postCDC(url, requestData);
 
@@ -415,6 +417,7 @@ class AppRequestServices
         }
         catch (e)
         {
+            Logger().e(e);
             return false;
         }
     }

@@ -9,6 +9,7 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:basic_utils/basic_utils.dart';
 
 class CheckInVM extends GetxController
 {
@@ -29,7 +30,9 @@ class CheckInVM extends GetxController
 
         if (identityData != null)
         {
-            usernameWrapper.value = jsonDecode(identityData)['username'];
+            String usernameWrapperData = (jsonDecode(identityData)['username']);
+
+            usernameWrapper.value = StringUtils.capitalize(usernameWrapperData);
         }
         update();
     }

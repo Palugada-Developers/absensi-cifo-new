@@ -1,6 +1,6 @@
 class AppConstants
 {
-    static const String baseUrl = "https://demo.api-hrm.winteraccess.id/";
+    static const String baseUrl = "http://hrmv2.cmedia.co.id/";
     static const String cdcUrl = "https://dev.cdc.winteraccess.id/";
     static const String apiVersion = "api/v1";
 

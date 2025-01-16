@@ -5,6 +5,7 @@ import 'package:absensi_cifo_v2/core/services/app.storage.services.dart';
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkin/check.in.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.vm.dart';
+import 'package:basic_utils/basic_utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -41,7 +42,9 @@ class CheckCompleteVM extends GetxController
 
         if (identityData != null)
         {
-            usernameWrapper.value = jsonDecode(identityData)['username'];
+            String usernameWrapperData = (jsonDecode(identityData)['username']);
+
+            usernameWrapper.value = StringUtils.capitalize(usernameWrapperData);
         }
 
         update();

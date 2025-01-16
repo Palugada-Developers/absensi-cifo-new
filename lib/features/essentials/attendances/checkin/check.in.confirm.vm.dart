@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:absensi_cifo_v2/core/services/app.camera.controller.dart';
 import 'package:absensi_cifo_v2/core/services/app.request.services.dart';
 import 'package:absensi_cifo_v2/core/services/app.storage.services.dart';
+import 'package:basic_utils/basic_utils.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +49,9 @@ class CheckInConfirmVM extends GetxController
 
         if (identityData != null)
         {
-            usernameWrapper.value = jsonDecode(identityData)['username'];
+            String usernameWrapperData = (jsonDecode(identityData)['username']);
+
+            usernameWrapper.value = StringUtils.capitalize(usernameWrapperData);
         }
 
         if (shiftData != null)
