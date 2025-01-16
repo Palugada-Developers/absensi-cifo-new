@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:absensi_cifo_v2/features/essentials/attendances/checklate/check.late.ui.dart';
-import 'package:absensi_cifo_v2/features/essentials/attendances/checklate/check.late.vm.dart';
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkout/check.out.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkout/check.out.vm.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.ui.dart';
@@ -271,7 +270,7 @@ class AppRequestServices {
         'timestamp': formattedTimestamp,
       };
 
-      final response = await _apiServices.postCDC(url, data);
+      final response = await _apiServices.postCDC(url, requestData);
 
       if (response.statusCode == 200) {
 

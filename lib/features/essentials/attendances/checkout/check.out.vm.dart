@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:absensi_cifo_v2/core/services/app.request.services.dart';
 import 'package:absensi_cifo_v2/core/services/app.storage.services.dart';
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkin/check.in.ui.dart';
@@ -9,7 +8,6 @@ import 'package:absensi_cifo_v2/features/essentials/init/init.ui.dart';
 import 'package:absensi_cifo_v2/features/essentials/init/init.vm.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 
 class CheckOutVM extends GetxController {
   // STATES
