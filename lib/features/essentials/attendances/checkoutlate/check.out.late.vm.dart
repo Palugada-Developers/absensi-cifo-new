@@ -9,62 +9,79 @@ import 'package:absensi_cifo_v2/features/essentials/init/init.vm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-class CheckOutLateVM extends GetxController{
-  // STATES
-  RxBool isLoading = false.obs;
-  RxBool isError = false.obs;
-  RxString reasonWrapper = "".obs;
+class CheckOutLateVM extends GetxController
+{
+    // STATES
+    RxBool isLoading = false.obs;
+    RxBool isError = false.obs;
+    RxString reasonWrapper = "".obs;
 
-  void handleRequest(context) async {
+    void handleRequest(context) async
+    {
 
-    FocusScope.of(context).unfocus();
+        FocusScope.of(context).unfocus();
 
-    isLoading.value = true;
-
-    update();
-
-    Future.delayed(const Duration(seconds: 3)).then((_) async {
-      var reason = reasonWrapper.value;
-
-      if (reason.isEmpty) {
-        isError.value = true;
-        return;
-      } else {
-        final absentData = await AppStorageServices().getData("absent");
-
-        if (absentData != null) {
-          var absentIdData = jsonDecode(absentData)['absent_id'];
-
-          var data = {
-            'type': 'out',
-            'absentId': absentIdData,
-            'description': reason,
-          };
-
-          try {
-            final bool response = await AppRequestServices().requestLate(data);
-            if (response) {
-              isError.value = false;
-              isLoading.value = false;
-              Get.delete<InitVM>();
-              Get.to(() => InitUi());
-            } else {
-              isError.value = true;
-            }
-
-          } catch(e) {
-            isError.value = true;
-          }
-
-        } else {
-          isError.value = false;
-          isLoading.value = false;
-          Get.delete<AuthVM>();
-          Get.to(() => AuthUi());
-        }
+        isLoading.value = true;
 
         update();
-      }
-    });
-  }
+
+        Future.delayed(const Duration(seconds: 3)).then((_) async
+            {
+                var reason = reasonWrapper.value;
+
+                if (reason.isEmpty)
+                {
+                    isError.value = true;
+                    return;
+                }
+                else
+                {
+                    final absentData = await AppStorageServices().getData("absent");
+
+                    if (absentData != null)
+                    {
+                        var absentIdData = jsonDecode(absentData)['absent_id'];
+
+                        var data = 
+                        {
+                            'type': 'out',
+                            'absentId': absentIdData,
+                            'description': reason
+                        };
+
+                        try
+                        {
+                            final bool response = await AppRequestServices().requestLate(data);
+                            if (response)
+                            {
+                                isError.value = false;
+                                isLoading.value = false;
+                                Get.delete<InitVM>();
+                                Get.to(() => InitUi());
+                            }
+                            else
+                            {
+                                isError.value = true;
+                            }
+
+                        }
+                        catch(e)
+                        {
+                            isError.value = true;
+                        }
+
+                    }
+                    else
+                    {
+                        isError.value = false;
+                        isLoading.value = false;
+                        Get.delete<AuthVM>();
+                        Get.to(() => AuthUi());
+                    }
+
+                    update();
+                }
+            }
+        );
+    }
 }

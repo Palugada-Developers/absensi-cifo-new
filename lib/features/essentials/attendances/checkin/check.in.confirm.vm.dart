@@ -9,133 +9,152 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class CheckInConfirmVM extends GetxController {
-  RxBool isError = false.obs;
+class CheckInConfirmVM extends GetxController
+{
+    RxBool isError = false.obs;
 
-  RxBool isLoading = false.obs;
+    RxBool isLoading = false.obs;
 
-  RxString usernameWrapper = "".obs;
+    RxString usernameWrapper = "".obs;
 
-  final ImagePicker imagePicker = ImagePicker();
+    final ImagePicker imagePicker = ImagePicker();
 
-  RxString shift = "Shift".obs;
+    RxString shift = "Shift".obs;
 
-  RxString shiftValue = "".obs;
+    RxString shiftValue = "".obs;
 
-  RxDouble latitude = 1.0.obs;
+    RxDouble latitude = 1.0.obs;
 
-  RxDouble longitude = 1.0.obs;
+    RxDouble longitude = 1.0.obs;
 
-  RxString imageBase64 = "".obs;
+    RxString imageBase64 = "".obs;
 
-  RxString currentTime = "".obs;
+    RxString currentTime = "".obs;
 
-  XFile? imageFile;
+    XFile? imageFile;
 
-  Timer? timer;
+    Timer? timer;
 
-  final CameraController cameraController = Get.put(CameraController());
+    final CameraController cameraController = Get.put(CameraController());
 
-  Future<void> requestData() async {
+    Future<void> requestData() async
+    {
 
-    final identityData = await AppStorageServices().getData('identity');
+        final identityData = await AppStorageServices().getData('identity');
 
-    final shiftData = await AppStorageServices().getData('selectedShift');
+        final shiftData = await AppStorageServices().getData('selectedShift');
 
-    final location = await AppStorageServices().getData('location');
+        final location = await AppStorageServices().getData('location');
 
-    if (identityData != null) {
-      usernameWrapper.value = jsonDecode(identityData)['username'];
+        if (identityData != null)
+        {
+            usernameWrapper.value = jsonDecode(identityData)['username'];
+        }
+
+        if (shiftData != null)
+        {
+            shift.value = jsonDecode(shiftData)['name'];
+            shiftValue.value = jsonDecode(shiftData)['value'];
+        }
+
+        if (location != null)
+        {
+            final String latitudeData = jsonDecode(location)['latitude'];
+            final String longitudeData = jsonDecode(location)['longitude'];
+            latitude.value = double.parse(latitudeData);
+            longitude.value = double.parse(longitudeData);
+        }
+
+        update();
     }
 
-    if (shiftData != null) {
-      shift.value = jsonDecode(shiftData)['name'];
-      shiftValue.value = jsonDecode(shiftData)['value'];
+    Future<bool> checkCameraPermission() async
+    {
+        PermissionStatus status = await Permission.camera.request();
+        return status.isGranted;
     }
 
-    if (location != null) {
-      final String latitudeData = jsonDecode(location)['latitude'];
-      final String longitudeData = jsonDecode(location)['longitude'];
-      latitude.value = double.parse(latitudeData);
-      longitude.value = double.parse(longitudeData);
+    Future<XFile?> takeSelfie() async
+    {
+        cameraController.onCameraOpen();
+
+        final image = await imagePicker.pickImage(
+            source: ImageSource.camera,
+            preferredCameraDevice: CameraDevice.front
+        );
+
+        if (image != null)
+        {
+            final bytes = await File(image.path).readAsBytes();
+            imageBase64.value = "data:image/jpeg;base64,${base64Encode(bytes)}";
+            update();
+        }
+
+        return image;
     }
 
-    update();
-  }
+    void handleRequest() async
+    {
+        try
+        {
+            var data = 
+            {
+                "jenis_shift": shiftValue.value,
+                "longitude": longitude.value,
+                "latitude": latitude.value,
+                "image": imageBase64.value
+            };
 
-  Future<bool> checkCameraPermission() async {
-    PermissionStatus status = await Permission.camera.request();
-    return status.isGranted;
-  }
+            cameraController.onCameraClose();
 
-  Future<XFile?> takeSelfie() async {
-    cameraController.onCameraOpen();
-
-    final image = await imagePicker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
-
-    if (image != null) {
-      final bytes = await File(image.path).readAsBytes();
-      imageBase64.value = "data:image/jpeg;base64,${base64Encode(bytes)}";
-      update();
+            Get.delete<CheckInConfirmVM>();
+            await AppRequestServices().requestCheckIn(data);
+        }
+        catch (e)
+        {
+            isError.value = true;
+        }
     }
 
+    void updateTime()
+    {
+        final now = DateTime.now();
+        final formatter = DateFormat('dd/MM/yyyy | HH:mm:ss');
 
-    return image;
-  }
-
-  void handleRequest() async {
-    try {
-      var data = {
-        "jenis_shift": shiftValue.value,
-        "longitude": longitude.value,
-        "latitude": latitude.value,
-        "image": imageBase64.value,
-      };
-
-      cameraController.onCameraClose();
-
-      Get.delete<CheckInConfirmVM>();
-      await AppRequestServices().requestCheckIn(data);
-    } catch (e) {
-      isError.value = true;
+        currentTime.value = "${formatter.format(now)} WIB";
     }
-  }
 
-  void updateTime() {
-    final now = DateTime.now();
-    final formatter = DateFormat('dd/MM/yyyy | HH:mm:ss');
+    Future<bool> checkPermissions() async
+    {
+        bool permissionGranted = await checkCameraPermission();
+        return permissionGranted;
+    }
 
-    currentTime.value = "${formatter.format(now)} WIB";
-  }
+    void initSelfie() async
+    {
+        imageFile = null;
+        imageFile = await takeSelfie();
+    }
 
-  Future<bool> checkPermissions() async {
-    bool permissionGranted = await checkCameraPermission();
-    return permissionGranted;
-  }
+    @override
+    void onInit()
+    {
+        super.onInit();
+        updateTime();
+        timer = Timer.periodic(const Duration(seconds: 1), (timer)
+            {
+                updateTime();
+            }
+        );
 
-  void initSelfie() async {
-    imageFile = null;
-    imageFile = await takeSelfie();
-  }
+        requestData();
+        initSelfie();
+    }
 
-  @override
-  void onInit() {
-    super.onInit();
-    updateTime();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      updateTime();
-    });
-
-    requestData();
-    initSelfie();
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
+    @override
+    void dispose()
+    {
+        timer?.cancel();
+        super.dispose();
+    }
 }

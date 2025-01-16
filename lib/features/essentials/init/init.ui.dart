@@ -5,33 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class InitUi extends StatelessWidget {
-  InitUi({super.key});
+class InitUi extends StatelessWidget
+{
+    InitUi({super.key});
 
-  final initVM = Get.put(InitVM());
+    final initVM = Get.put(InitVM());
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppThemes.whiteColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            AppPrefix.logoUrl,
-            width: 0.5.sw,
-            fit: BoxFit.fitWidth,
-          ),
+    @override
+    Widget build(BuildContext context)
+    {
+        return Scaffold(
+            backgroundColor: AppThemes.whiteColor,
+            body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                    Image.asset(
+                        AppPrefix.logoUrl,
+                        width: 0.5.sw,
+                        fit: BoxFit.fitWidth
+                    ),
 
-          Padding(
-            padding: EdgeInsets.only(left: 50, right: 50),
-            child: LinearProgressIndicator(
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+                    Padding(
+                        padding: EdgeInsets.only(left: 50, right: 50),
+                        child: LinearProgressIndicator(
+                            color: Colors.grey
+                        )
+                    )
+                ]
+            )
+        );
+    }
 }

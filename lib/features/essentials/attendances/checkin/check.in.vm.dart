@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:absensi_cifo_v2/core/services/app.request.services.dart';
 import 'package:absensi_cifo_v2/core/services/app.storage.services.dart';
 import 'package:absensi_cifo_v2/features/essentials/attendances/checkin/check.in.confirm.ui.dart';
@@ -11,66 +10,72 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class CheckInVM extends GetxController {
-  // STATES
-  RxBool isLoading = false.obs;
-  RxBool isError = false.obs;
-  RxBool isFilled = false.obs;
-  RxString usernameWrapper = "".obs;
+class CheckInVM extends GetxController
+{
+    // STATES
+    RxBool isLoading = false.obs;
+    RxBool isError = false.obs;
+    RxBool isFilled = false.obs;
+    RxString usernameWrapper = "".obs;
 
-  late SingleValueDropDownController shiftController;
+    late SingleValueDropDownController shiftController;
 
-  final ImagePicker imagePicker = ImagePicker();
+    final ImagePicker imagePicker = ImagePicker();
 
-  Future<void> requestData() async {
+    Future<void> requestData() async
+    {
 
-    await AppRequestServices().requestProfile();
+        final identityData = await AppStorageServices().getData("identity");
 
-    final identityData = await AppStorageServices().getData("identity");
-
-    if (identityData != null) {
-      usernameWrapper.value = jsonDecode(identityData)['username'];
+        if (identityData != null)
+        {
+            usernameWrapper.value = jsonDecode(identityData)['username'];
+        }
+        update();
     }
-    update();
-  }
 
-  void handleRequest() async {
+    void handleRequest() async
+    {
 
-    isLoading.value = true;
+        isLoading.value = true;
 
-    var data = {
-      "name": shiftController.dropDownValue?.name,
-      "value": shiftController.dropDownValue?.value,
-    };
+        var data = 
+        {
+            "name": shiftController.dropDownValue?.name,
+            "value": shiftController.dropDownValue?.value
+        };
 
-    await AppStorageServices().saveData("selectedShift", jsonEncode(data));
+        await AppStorageServices().saveData("selectedShift", jsonEncode(data));
 
-    isLoading.value = false;
+        isLoading.value = false;
 
-    update();
+        update();
 
-    Get.delete<CheckInConfirmVM>();
+        Get.delete<CheckInConfirmVM>();
 
-    Get.to(() => CheckInConfirmUi());
-  }
+        Get.to(() => CheckInConfirmUi());
+    }
 
-  void handleLogout() async {
-      await AppRequestServices().requestLogout();
-      await AppStorageServices().removeAllData();
-      Get.delete<InitVM>();
-      Get.to(() => InitUi());
-  }
+    void handleLogout() async
+    {
+        await AppRequestServices().requestLogout();
+        await AppStorageServices().removeAllData();
+        Get.delete<InitVM>();
+        Get.to(() => InitUi());
+    }
 
-  Future<bool> requestCameraPermission() async {
-    PermissionStatus status = await Permission.camera.request();
-    return status.isGranted;
-  }
+    Future<bool> requestCameraPermission() async
+    {
+        PermissionStatus status = await Permission.camera.request();
+        return status.isGranted;
+    }
 
-  @override
-  void onInit() {
-    shiftController = SingleValueDropDownController();
-    requestData();
-    super.onInit();
-  }
+    @override
+    void onInit()
+    {
+        shiftController = SingleValueDropDownController();
+        requestData();
+        super.onInit();
+    }
 
 }

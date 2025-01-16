@@ -1,15 +1,18 @@
 import 'package:get/get.dart';
 
-class CameraController extends GetxController {
-  RxBool isCameraOpen = false.obs;
+class CameraController extends GetxController
+{
+    RxBool isCameraOpen = false.obs;
 
-  void onCameraOpen() {
-    isCameraOpen.value = true;
-    update();
-  }
+    void onCameraOpen()
+    {
+        isCameraOpen.value = true;
+        update();
+    }
 
-  void onCameraClose() {
-    isCameraOpen.value = false;
-    update();
-  }
+    void onCameraClose()
+    {
+        isCameraOpen.value = false;
+        update();
+    }
 }

@@ -4,61 +4,75 @@ import 'package:absensi_cifo_v2/features/essentials/init/init.vm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-class AuthVM extends GetxController {
-  // STATES
-  RxBool isError = false.obs;
-  RxBool isLoading = false.obs;
-  RxString usernameWrapper = "".obs;
-  RxString passwordWrapper = "".obs;
+class AuthVM extends GetxController
+{
+    // STATES
+    RxBool isError = false.obs;
+    RxBool isLoading = false.obs;
+    RxString usernameWrapper = "".obs;
+    RxString passwordWrapper = "".obs;
 
-  // SERVICES
-  final AppRequestServices requestServices = AppRequestServices();
+    // SERVICES
+    final AppRequestServices requestServices = AppRequestServices();
 
-  // HANDLER
-  void handleRequest(context) async {
-    // STATES UPDATE
-    FocusScope.of(context).unfocus();
-    String emailData = usernameWrapper.value;
-    String passwordData = passwordWrapper.value;
+    // HANDLER
+    void handleRequest(context) async
+    {
+        // STATES UPDATE
+        FocusScope.of(context).unfocus();
+        String emailData = usernameWrapper.value;
+        String passwordData = passwordWrapper.value;
 
-    if (emailData.isEmpty || passwordData.isEmpty){
+        if (emailData.isEmpty || passwordData.isEmpty)
+        {
+            isError.value = true;
+        }
+        else
+        {
 
-      isError.value = true;
+            isLoading.value = true;
 
-    } else {
+            var requestData =
+                {
+                    "user_name": emailData,
+                    "password": passwordData
+                };
 
-      isLoading.value = true;
+            try
+            {
 
-      var requestData = {
-        "user_name": emailData,
-        "password": passwordData,
-      };
+                final bool requestLogin = await requestServices.requestLogin(requestData);
 
-      try {
+                if (requestLogin)
+                {
+                    Get.delete<InitVM>();
+                    Get.to(() => InitUi());
+                }
+                else
+                {
+                    isError.value = true;
+                }
 
-        final bool requestLogin = await requestServices.requestLogin(requestData);
+            }
+            catch (e)
+            {
 
-        if (requestLogin) {
-          Get.delete<InitVM>();
-          Get.to(() => InitUi());
-        } else {
-          isError.value = true;
+                isError.value = true;
+
+            }
+            finally
+            {
+
+                Future.delayed(const Duration(seconds: 3)).then((_)
+                    {
+                        isError.value = false;
+                        isLoading.value = false;
+                    }
+                );
+
+            }
         }
 
-      } catch (e) {
-
-        isError.value = true;
-
-      } finally {
-
-        Future.delayed(const Duration(seconds: 3)).then((_) {
-          isError.value = false;
-          isLoading.value = false;
-        });
-
-      }
+        update();
     }
-
-    update();
-  }
 }
